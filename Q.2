@@ -1,0 +1,19 @@
+QUESTIONS: 1.Create Projects:
+		stanley
+		sydney
+		farm
+		tokyo
+		nginx
+	     having a description "EX280 Project For Application Deployment".
+	2. greg should have admin access over "stanley and sydney"
+	3. anthony should be able to view "sydney" project but should not be able to modify/customize.
+	4. anthony should have admin access over project "farm".
+	5. joe has administrative access to "tokyo and nginx".
+
+Solutions:
+# oc new-projec <project-name> --description="EX280 Project For Application Deployment"
+
+once all project created work on the point no.2,3 and so on
+# oc adm policy add-role-to-user <role-name> <username> -n <project-name>
+ example: # oc policy add-role-to-user admin greg -n stanley
+
