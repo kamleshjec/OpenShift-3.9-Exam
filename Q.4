@@ -1,0 +1,91 @@
+QUESTION:
+      1. Create a resource quota "ex280-quota" for defining limits for resource access for projects in   sydney project.
+			a. Total MEMORY amount for max usage is 2Gi.
+			b. Total CPU unit for max usage is "2" kubernates units. 
+			c. Total no. of PODS should be limited to 13.
+			d. Total no. of SERVICES should not exceed 10.
+			e. Total no. of REPLICATION CONTROLLERS should be 3.
+     
+      2. Create a resource limit "ex280-quotalimit" for defininig range of resource access based on soft/hard limit. 
+			a. For PODS min.CPU limit is "5m" and max.CPU limit is "500m".
+			b. For CONTAINERS min.CPU limit is "100m" and max.CPU limit is "500m" and default request of "300m"
+			c. For PODS min.MEMORY is "300Mi" and max.MEMORY is "500Mi"
+			d. For CONTAINERS min.MEMORY is "200Mi" and max.MEMORY is "600Mi" and default     request of "400Mi"
+
+ANSWERS:
+	
+[root@workstation q4]# vim ex280-quota.yml 
+	apiVersion: v1
+	kind: ResourceQuota
+	metadata:
+	  name: ex280-quota
+	spec:
+	  hard:
+	    pods: "13"
+	    limits.cpu: "2"
+	    limits.memory: "2Gi"
+	    services: "10"
+	    replicationcontrollers: "3" 
+	:wq!
+
+[root@workstation q4]# vim ex280-quotalimit.yml 
+	apiVersion: v1
+	kind: LimitRange
+	metadata:
+	  name: ex280-quotalimit
+	spec:
+	  limits:
+	    - type: "Pod"
+	      min:
+	        cpu: "5m"
+	        memory: "300Mi"
+	      max:
+	        cpu: "500m"
+	        memory: "500Mi"
+	    - type: "Container"
+	      min:
+	        cpu: "100m"
+	        memory: "200Mi"
+	      max:
+	        cpu: "500m"
+	        memory: "600Mi"
+	      default:
+	        cpu: "300m"
+	        memory: "400Mi"
+	:wq!
+
+[root@workstation q5]# oc create -f ex280-quota.yml 
+resourcequota "ex280-quota" created
+
+[root@workstation q5]# oc create -f ex280-quotalimit.yml 
+limitrange "ex280-quotalimit" created
+
+[root@workstation q5]# oc get quota
+NAME          AGE
+ex280-quota   14s
+
+[root@workstation q5]# oc get limits
+NAME               AGE
+ex280-quotalimit   14s
+
+[root@workstation q5]# oc describe quota
+Name:                   ex280-quota
+Namespace:              sydney
+Resource                Used  Hard
+--------                ----  ----
+limits.cpu              0     2
+limits.memory           0     2Gi
+pods                    0     13
+replicationcontrollers  0     3
+services                0     10
+
+[root@workstation q5]# oc describe limitrange 
+Name:       ex280-quotalimit
+Namespace:  sydney
+Type        Resource  Min    Max    Default Request  Default Limit  Max Limit/Request Ratio
+----        --------  ---    ---    ---------------  -------------  -----------------------
+Pod         cpu       5m     500m   -                -              -
+Pod         memory    300Mi  500Mi  -                -              -
+Container   cpu       100m   500m   300m             300m           -
+Container   memory    200Mi  600Mi  400Mi            400Mi          -
+
