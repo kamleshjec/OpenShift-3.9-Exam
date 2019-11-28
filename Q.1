@@ -1,0 +1,12 @@
+QUESTION:
+	1. Create three users "greg, joe & anthony" to access oc GUI and CLI having password "zaldebra".
+  2. Use "HTPasswdPasswordIdentityProvider" as an identity provider method.
+	3. Ensure no other user should be allowed to access any other projects and they should not be able to create project.
+           (User info are stored under: /etc/origin/openshift-passwd)
+           {{in practice use /etc/origin/master/htpasswd to store user info}}
+ Note: in real exam name of user and pwd may vaired also could be different.          
+           
+solution: 
+1. #htpasswd -b /etc/origin/master/htpasswd <username> <passwd>
+2. #oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated system:authenticated:oauth
+
