@@ -1,0 +1,56 @@
+QUESTION:
+	1. Create a Persistent Volume(PV) of "exam-registry-volume" Using /OSE_registry
+  2. "exam-registry-volume" to be bound with Persistent Volume Claim(PVC) "exam-registry-claim" 
+	    for substituting/replacing the default1 "mysqldb" volume
+	
+	USE THE given PV & PVC FILES
+  
+  Solutions:
+ download the file given the link
+  #wget <url> and open using vim editor and update the parameter according to questions
+  1. #vim docker-pv.yaml
+  	apiVersion: v1
+	kind: PersistentVolume
+	metadata:
+	  name: exam-registry-volume
+	  labels:
+	    deploymentconfig: docker-registry
+	spec:
+	  capacity:
+	    storage: 4Gi
+	  accessModes:
+	    - ReadWriteMany
+	  nfs:
+	    path: /OSE_regisrty
+	    server: services.lab.example.com
+	  persistentVolumeReclaimPolicy: Recycle
+	  ClaimRef:
+	    name: exam-registry-claim
+	    namespace: default
+:wq
+#oc create -f docker-pv.yaml
+#oc get pv -- status must of available until pvc is create for same
+2. #vim docker-pvc.yaml
+apiVersion: v1
+	kind: PersistentVolumeClaim
+	metadata:
+	  name: exam-registry-claim
+	spec:
+	  resources:
+	    requests:
+	      storage: 4Gi
+	  accessModes:
+	    - ReadWriteMany
+:wq
+#oc create -f docker-pvc.yaml
+#oc get pvc -- must be bound with volume create above
+
+if you face using with volume edit the docker-registry file
+#oc get dc
+#oc edit dc docker-registry
+search for volumes
+insert two line under volume section: initially it should me 
+empty{}
+after edit:
+  persistentVolumeClaim:
+      claimName: exam-registry-claim
