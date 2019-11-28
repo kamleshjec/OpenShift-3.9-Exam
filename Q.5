@@ -1,0 +1,28 @@
+QUESTION: As User greg under the project "sydney" 
+	1. Create an application using a git url "http://services.lab.example.com/php-helloworld" accessible from registry.
+	2. Use docker image registry.lab.example.com/rhscl/php-70-rhel7
+  3. Make changes in git file "index.html" to replace "PLACEHOLDER" with the text available at url "http://rhelx.bla/bla.com"--(consider as "Hello, GOOD LUCK ")
+	4. Create a web hook to trigger build
+  5. Application should be accessible with "http://hello.apps.lab.example.com".
+  
+  Solution:
+  #oc new-app --name=hello --docker-image=registry.lab.example.com/rhscl/php-70-rhel7 http://services.lab.example.com/php-helloworld
+  #oc get po
+  #oc get svc
+  #git clone http://registry.lab.example.com/php-helloworld
+  #ls 
+  # cd /php-helloworld
+  #vim index.php -- modify the file as per point no.4
+  #git add .
+  #git commit -m "my first commit"
+  #git push origin master
+  #oc start-build php-helloworld
+  #oc get svc
+  #oc get route  -- initially you will get "No resources found."
+ now expose the application as per the point no.5
+ #oc expose svc hello --hostname=hello.apps.lab.example.com
+ verif the app:
+ #curl -k http://hello.apps.lab.example.com
+result will be your modified content in index.php file
+
+  
