@@ -1,0 +1,67 @@
+Q. Create an application from 3rd party repository in project ditto considring following points,
+
+a. Change registry path to registry.lab8.example.com
+b. Change imagestream for Postgress from postgres:9.5 to postgres:9.2
+c. You can get gogs image from http://xyz.lab8.example.com/material/gogs/gogs.rar
+d. Template file available at http://xyz.lab8.example.com/material/gogs/
+e. You need to tag gogs image to your local repository with tag 9.0.7
+f. Your template should be available to all other users. 
+g. Gogs application should be accessible in browser with user http://gogs.ditto.devapps.lab8.example.com
+h. Once you accessed gogs applicaiton in browser, you register one user randy with password ductive and email ID as randy@master.lab8.example.com
+i. Create one repository with name ex280 and commit one file README.txt with content "mereon de bo carpen dwo si". 
+j. Make repository accessible. 
+
+Ans:
+
+a. Make sure you are in admin user and in project ditto
+#oc whoami
+admin
+#oc project ditto
+
+b. Download template and image file from path mentioned in question. 
+wget http://xyz.lab8.example.com/material/gogs/gogs.rar
+wget http://xyz.lab8.example.com/material/gogs/gogs-template.yaml
+
+c. Now load image to local repository
+#docker load -i gogs.rar
+*****************
+***********************
+#docker tag docker.io/gogs:latest registry.lab8.example.com/openshiftdemos/gogs:9.0.7
+#docker push registry.lab8.example.com:/openshiftdemos/gogs:9.0.7
+
+d. Update template file with postgres version 
+
+#vim gogs-template.yaml
+  line number : 96
+  name: postgresql:9.2
+  line number 232
+  Before change
+  name: docker.io/openshiftdemos/gogs:${GOGS_VERSION}
+  After change
+  name: registry.lab8.example.com/openshiftdemos/gogs:$GOGS_VERSION
+  :wq!
+
+e. Now launch pods from template file.
+# oc create new-app --file=gogs-template.yaml --param=HOSTNAME=gogs.ditto.devapps.lab8.example.com --param=GOGS_VERSION=9.0.7
+Wait for some time
+
+g. Once pods are created, access application as http://gogs.ditto.devapps.lab8.example.com and in right top you will see one tag "register", click on that and enter following detail.
+
+User: randy
+Email: randy@xyz.com
+Password: ductive
+Renter password: ductive
+
+Click submit to create user.
+
+h. Using above login detail login to application with above url and in right side you will get one tag as repository with a "+" sign, click on "+" to create a repository. Enter repository name as "ex280" and submit it. 
+
+i. After repository created in master node do a git checkout, create a file README.txt with content "mereon de bo carpen dwo si" and commit it.
+# git clone http://gogs.ditto.lab8.example.com/repository/ex280.git
+# echo "mereon de bo carpen dwo si" > README.txt
+# git add README.txt
+# git commit -m "Anything you known"\
+# git push origin master
+
+j. Now in application inside repository ex280 you should see a file README.txt and you can open that file in browser to see content.
+Done
